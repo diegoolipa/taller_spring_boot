@@ -6,25 +6,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pe.todotic.taller_sba.model.Libro;
 import pe.todotic.taller_sba.model.Usuario;
+import pe.todotic.taller_sba.repo.LibroRepository;
 import pe.todotic.taller_sba.repo.UsuarioRepository;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
+    private final UsuarioRepository usuarioRepository;
+
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    public UsuarioController(UsuarioRepository usuarioRepository){
+        this.usuarioRepository=usuarioRepository;
+    }
 
     @GetMapping("")
     List<Usuario> index(){
         return usuarioRepository.findAll();
     }
 
+    @GetMapping("{id:[0-9]+}")
+    Usuario get(@PathVariable Integer id){
+        return usuarioRepository.findById(id).get();
+    }
+
     @PostMapping
     Usuario crear(@RequestBody Usuario usuario){
-
         return usuarioRepository.save(usuario);
     }
 
@@ -33,7 +42,6 @@ public class UsuarioController {
         Usuario usuarioFronDb = usuarioRepository.getById(id);
         usuarioFronDb.setNombres(usuario.getNombres());
         usuarioFronDb.setApellidos(usuario.getApellidos());
-        usuarioFronDb.setNombreCompleto(usuario.getNombreCompleto());
         usuarioFronDb.setEmail(usuario.getEmail());
         usuarioFronDb.setEstado(usuario.getEstado());
         return usuarioRepository.save(usuarioFronDb);
